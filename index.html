@@ -120,6 +120,13 @@
     .detail-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:16px;background:#fffaf5;border:1px solid rgba(23,23,20,.06)}
     .detail-item b{font-size:13px}
     .detail-item span{font-size:12px;color:var(--muted)}
+    .detail-item{position:relative}
+    .detail-main{min-width:0}
+    .detail-main b{display:block}
+    .detail-main span{display:block;margin-top:2px}
+    .delete-action{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid rgba(184,97,103,.24);background:#fff7f4;color:#9d4d53;display:grid;place-items:center;cursor:pointer;font-size:18px;line-height:1}
+    .delete-action:active{transform:scale(.96)}
+
     .empty{font-size:12px;color:var(--muted)}
 
     .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -339,6 +346,52 @@ function storageKey(){
 function persistData(){
   try{ localStorage.setItem(storageKey(), JSON.stringify(data)); }catch(e){}
 }
+function dateInRange(date, start, end){
+  if(!date || !start) return false;
+  return date >= start && (!end || date <= end);
+}
+function recalcEstroBottleCount(){
+  const start = data.estrogel.bottleStarted;
+  if(!start) return;
+  let total = 0;
+  Object.entries(data.estrogel.daily || {}).forEach(([date, count]) => {
+    if(dateInRange(date, start, data.today)) total += Number(count) || 0;
+  });
+  data.estrogel.bottlePressCount = total;
+  const currentBottle = (data.estrogel.bottleHistory || []).find(item => item.current);
+  if(currentBottle) currentBottle.totalPresses = total;
+}
+function removeExample(type, date){
+  data.examples = (data.examples || []).filter(x => !(x.type === type && x.date === date));
+}
+function removeAction(kind, date){
+  if(kind === 'estro'){
+    if(data.estrogel.daily) delete data.estrogel.daily[date];
+    if(date === data.today) data.estrogel.todayPresses = 0;
+    removeExample('Эстрожель', date);
+    recalcEstroBottleCount();
+  }
+  if(kind === 'utro'){
+    data.utrogestan.takenDates = (data.utrogestan.takenDates || []).filter(d => d !== date);
+    removeExample('Утрожестан', date);
+  }
+  if(kind === 'rsleek'){
+    data.massages.rsleek = (data.massages.rsleek || []).filter(d => d !== date);
+    removeExample('R-Sleek', date);
+  }
+  if(kind === 'lymph'){
+    data.massages.lymph = (data.massages.lymph || []).filter(d => d !== date);
+    removeExample('Лимфодренажный массаж', date);
+  }
+  if(kind === 'period'){
+    data.cycle.periodDays = (data.cycle.periodDays || []).filter(d => d !== date);
+    removeExample('Месячные', date);
+    recalcCycleFromPeriods();
+  }
+  persistData();
+  render();
+}
+
 function targetDate(){ return selectedDate || data.today; }
 function targetLabel(){ return targetDate() === data.today ? 'сегодня' : formatLongDate(targetDate()); }
 function shiftMonth(delta){
@@ -538,13 +591,17 @@ function dayDetailHTML(date = selectedDate || data.today){
   const marks = marksFor(date);
   let extra = '';
   if(isUtroScheduled(date) && !(data.utrogestan.takenDates || []).includes(date)){
-    extra = `<div class="detail-item"><b>Утрожестан</b><span>по графику, ещё не отмечен</span></div>`;
+    extra = `<div class="detail-item"><div class="detail-main"><b>Утрожестан</b><span>по графику, ещё не отмечен</span></div></div>`;
   }
   return `
     <div class="day-detail" id="dayDetailBox">
       <h3>${formatLongDate(date)}</h3>
       <div class="detail-list">
-        ${marks.length ? marks.map(item => `<div class="detail-item"><b>${item.label}</b><span>${item.value}</span></div>`).join('') : '<div class="empty">На этот день пока нет отметок.</div>'}
+        ${marks.length ? marks.map(item => `
+          <div class="detail-item">
+            <div class="detail-main"><b>${item.label}</b><span>${item.value}</span></div>
+            <button class="delete-action" data-remove="${item.key}" data-remove-date="${date}" aria-label="Удалить отметку">×</button>
+          </div>`).join('') : '<div class="empty">На этот день пока нет отметок.</div>'}
         ${extra}
       </div>
     </div>`;
@@ -726,6 +783,15 @@ function bindMainEvents(){
     };
   });
 
+  document.querySelectorAll('.delete-action').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const kind = btn.dataset.remove;
+      const date = btn.dataset.removeDate;
+      if(confirm('Удалить эту отметку?')) removeAction(kind, date);
+    };
+  });
+
   const prev = document.getElementById('prevMonth');
   const next = document.getElementById('nextMonth');
   if(prev) prev.onclick = () => shiftMonth(-1);
@@ -783,14 +849,9 @@ function openPanel(type){
     panel.querySelector('#minusBtn').onclick = () => { count = Math.max(0, count - 1); panel.querySelector('#countValue').textContent = count; };
     panel.querySelector('#plusBtn').onclick = () => { count += 1; panel.querySelector('#countValue').textContent = count; };
     panel.querySelector('#saveEstro').onclick = () => {
-      const prev = Number(data.estrogel.daily[date] || 0);
       if(date === data.today) data.estrogel.todayPresses = count;
       data.estrogel.daily[date] = count;
-      if(date >= data.estrogel.bottleStarted && date <= data.today){
-        data.estrogel.bottlePressCount = Math.max(0, data.estrogel.bottlePressCount - prev + count);
-      }
-      const currentBottle = (data.estrogel.bottleHistory || []).find(item => item.current);
-      if(currentBottle) currentBottle.totalPresses = data.estrogel.bottlePressCount;
+      recalcEstroBottleCount();
       syncExamples('Эстрожель', `${count} нажатия`, date);
       persistData();
       actionDone();
@@ -800,7 +861,7 @@ function openPanel(type){
   if(type === 'newBottle'){
     panel.innerHTML = `
       <h2>Новая бутылка</h2>
-      <div class="sheet-sub">Счётчик нажатий начнётся заново с выбранной даты.</div>
+      <div class="sheet-sub">Счётчик сбросится только после этого действия и дальше будет накапливаться каждый день с новой бутылки.</div>
       <div class="toggle-row">
         <div class="toggle-option"><b>Текущая бутылка</b><span>${data.estrogel.bottlePressCount} нажатий</span></div>
         <div class="toggle-option"><b>Новая стартовая дата</b><span>${formatLongDate(targetDate())}</span></div>
@@ -811,12 +872,14 @@ function openPanel(type){
       </div>`;
     panel.querySelector('#saveBottle').onclick = () => {
       data.estrogel.bottleHistory = data.estrogel.bottleHistory || [];
+      const previousCurrent = data.estrogel.bottleHistory.find(item => item.current);
+      if(previousCurrent) previousCurrent.totalPresses = data.estrogel.bottlePressCount;
       data.estrogel.bottleHistory.forEach(item => item.current = false);
       const date = targetDate();
       data.estrogel.bottleStarted = date;
-      const startPresses = Number(data.estrogel.daily?.[date] || (date===data.today ? data.estrogel.todayPresses : 0));
-      data.estrogel.bottlePressCount = date === data.today ? startPresses : data.estrogel.bottlePressCount;
-      data.estrogel.bottleHistory.unshift({started:date,totalPresses:data.estrogel.bottlePressCount,current:true});
+      data.estrogel.bottlePressCount = 0;
+      data.estrogel.bottleHistory.unshift({started:date,totalPresses:0,current:true});
+      recalcEstroBottleCount();
       syncExamples('Новая бутылка', 'счётчик начат заново', date);
       persistData();
       actionDone();
@@ -887,6 +950,7 @@ async function loadData(){
   data.displayMonth = data.today.slice(0,7);
   data.estrogel.todayPresses = Number(data.estrogel.daily?.[data.today] || 0);
   recalcCycleFromPeriods();
+  recalcEstroBottleCount();
   if(!selectedDate) selectedDate = data.today;
   bindSheetEvents();
   render();
