@@ -355,11 +355,30 @@ function recalcEstroBottleCount(){
   if(!start) return;
   let total = 0;
   Object.entries(data.estrogel.daily || {}).forEach(([date, count]) => {
-    if(dateInRange(date, start, data.today)) total += Number(count) || 0;
+    if(date >= start) total += Number(count) || 0;
   });
   data.estrogel.bottlePressCount = total;
   const currentBottle = (data.estrogel.bottleHistory || []).find(item => item.current);
   if(currentBottle) currentBottle.totalPresses = total;
+}
+function estroCountBefore(date){
+  const start = data.estrogel.bottleStarted;
+  if(!start || date < start) return 0;
+  let total = 0;
+  Object.entries(data.estrogel.daily || {}).forEach(([d, count]) => {
+    if(d >= start && d < date) total += Number(count) || 0;
+  });
+  return total;
+}
+function estroCountThrough(date){
+  return estroCountBefore(date) + Number(data.estrogel.daily?.[date] || 0);
+}
+function localTodayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
 }
 function removeExample(type, date){
   data.examples = (data.examples || []).filter(x => !(x.type === type && x.date === date));
@@ -833,26 +852,35 @@ function openPanel(type){
 
   if(type === 'estro'){
     const date = targetDate();
-    let count = Number(data.estrogel.daily?.[date] || (date === data.today ? data.estrogel.todayPresses : 0));
+    const before = estroCountBefore(date);
+    let count = estroCountThrough(date);
     panel.innerHTML = `
       <h2>Эстрожель</h2>
-      <div class="sheet-sub">Сколько нажатий было ${targetLabel()}?</div>
+      <div class="sheet-sub">Счётчик продолжается с предыдущего дня. Нажимай «+» за каждое новое нажатие ${targetLabel()}.</div>
       <div class="stepper">
         <button id="minusBtn">−</button>
         <strong id="countValue">${count}</strong>
         <button id="plusBtn">+</button>
       </div>
+      <div class="toggle-option" style="margin-bottom:16px"><b>До этой даты</b><span>${before} нажатий</span></div>
       <div class="sheet-actions">
-        <button class="btn-primary" id="saveEstro">Сохранить</button>
+        <button class="btn-primary" id="saveEstro">Сохранить счётчик</button>
         ${backButtonHTML()}
       </div>`;
-    panel.querySelector('#minusBtn').onclick = () => { count = Math.max(0, count - 1); panel.querySelector('#countValue').textContent = count; };
-    panel.querySelector('#plusBtn').onclick = () => { count += 1; panel.querySelector('#countValue').textContent = count; };
+    panel.querySelector('#minusBtn').onclick = () => {
+      count = Math.max(before, count - 1);
+      panel.querySelector('#countValue').textContent = count;
+    };
+    panel.querySelector('#plusBtn').onclick = () => {
+      count += 1;
+      panel.querySelector('#countValue').textContent = count;
+    };
     panel.querySelector('#saveEstro').onclick = () => {
-      if(date === data.today) data.estrogel.todayPresses = count;
-      data.estrogel.daily[date] = count;
+      const addedToday = Math.max(0, count - before);
+      data.estrogel.daily[date] = addedToday;
+      if(date === data.today) data.estrogel.todayPresses = addedToday;
       recalcEstroBottleCount();
-      syncExamples('Эстрожель', `${count} нажатия`, date);
+      syncExamples('Эстрожель', `${addedToday} нажатия · счётчик ${count}`, date);
       persistData();
       actionDone();
     };
@@ -878,6 +906,8 @@ function openPanel(type){
       const date = targetDate();
       data.estrogel.bottleStarted = date;
       data.estrogel.bottlePressCount = 0;
+      if(data.estrogel.daily) delete data.estrogel.daily[date];
+      if(date === data.today) data.estrogel.todayPresses = 0;
       data.estrogel.bottleHistory.unshift({started:date,totalPresses:0,current:true});
       recalcEstroBottleCount();
       syncExamples('Новая бутылка', 'счётчик начат заново', date);
@@ -945,8 +975,7 @@ async function loadData(){
     const saved = JSON.parse(localStorage.getItem(storageKey()) || localStorage.getItem('museDataV2') || 'null');
     if(saved) data = deepMerge(data, saved);
   }catch(e){}
-  const now = new Date();
-  data.today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  data.today = localTodayISO();
   data.displayMonth = data.today.slice(0,7);
   data.estrogel.todayPresses = Number(data.estrogel.daily?.[data.today] || 0);
   recalcCycleFromPeriods();
