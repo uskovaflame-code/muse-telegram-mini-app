@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "MUSE",
+    "subtitle": "cycle & care"
+  },
+  "displayMonth": "2026-10",
+  "today": "2026-10-06",
+  "profile": {
+    "name": "Пользователь",
+    "theme": "Editorial feminine",
+    "sharedMode": "личный дневник"
+  },
+  "cycle": {
+    "currentDay": "—",
+    "avgLength": null,
+    "previousCycles": [],
+    "periodDays": [],
+    "nextPeriodEstimate": null
+  },
+  "estrogel": {
+    "todayPresses": 0,
+    "bottlePressCount": 0,
+    "bottleStarted": null,
+    "daily": {},
+    "bottleHistory": []
+  },
+  "utrogestan": {
+    "startDay": null,
+    "courseLengthDays": null,
+    "dose": "",
+    "takenDates": []
+  },
+  "massages": {
+    "monthlyGoal": {
+      "rsleek": 6,
+      "lymph": 4
+    },
+    "rsleek": [],
+    "lymph": []
+  },
+  "examples": []
+}

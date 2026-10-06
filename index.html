@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>MUSE — cycle & care</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#e8e1d8;
+      --paper:#f6f0e8;
+      --paper-2:#fbf7f2;
+      --ink:#171714;
+      --muted:#7f7a73;
+      --line:rgba(23,23,20,.09);
+      --rose:#c98d8d;
+      --rose-soft:#ead7d3;
+      --rose-2:#f1e5df;
+      --olive:#7e8770;
+      --olive-soft:#dde3d1;
+      --sage:#cfd8bf;
+      --accent:#3d3f36;
+      --white:#fffdf9;
+      --shadow:0 24px 60px rgba(32,24,18,.10);
+      --shadow-soft:0 10px 30px rgba(32,24,18,.06);
+      --radius-xl:32px;
+      --radius-lg:24px;
+      --radius-md:18px;
+      --nav-h:82px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:linear-gradient(180deg,#ddd4c9 0%,#e9e2d9 100%);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh}
+    button,input{font:inherit}
+    .shell{position:relative;max-width:430px;min-height:100vh;margin:0 auto;background:linear-gradient(180deg,#f4eee5 0%,#f8f3ec 52%,#f3ece2 100%);overflow:hidden;box-shadow:0 0 70px rgba(0,0,0,.12)}
+    .glow{position:absolute;border-radius:50%;filter:blur(3px);opacity:.75;pointer-events:none}
+    .glow.a{width:240px;height:240px;top:-60px;right:-90px;background:radial-gradient(circle,#efe3da 0%,#dcdcc2 58%,rgba(255,255,255,0) 72%)}
+    .glow.b{width:220px;height:220px;left:-120px;top:320px;background:radial-gradient(circle,#edd8d2 0%,rgba(255,255,255,0) 70%)}
+    .app{position:relative;z-index:2;padding:calc(env(safe-area-inset-top) + 18px) 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 96px)}
+    .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+    .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+    .brand{font-family:Georgia,"Times New Roman",serif;font-size:40px;line-height:.95;letter-spacing:-.05em;margin-top:4px}
+    .page-title{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1;letter-spacing:-.04em;margin:2px 0 0}
+    .top-note{font-size:13px;color:var(--muted);margin-top:4px}
+    .avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.45);backdrop-filter:blur(14px);box-shadow:var(--shadow-soft);font-family:Georgia,serif;font-style:italic;font-size:18px}
+
+    .hero{position:relative;overflow:hidden;border-radius:36px;padding:22px 22px 20px;background:linear-gradient(160deg,#f9f3ed 0%,#efe4dc 48%,#e9e4d7 100%);border:1px solid rgba(255,255,255,.76);box-shadow:var(--shadow)}
+    .hero::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-90px;top:-90px;background:radial-gradient(circle,#f5ebe5 0%,rgba(255,255,255,0) 72%)}
+    .hero::after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;left:-70px;bottom:-80px;background:radial-gradient(circle,#dbe1ce 0%,rgba(255,255,255,0) 72%)}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .95fr;gap:12px;align-items:stretch}
+    .hero-copy h1{font-family:Georgia,"Times New Roman",serif;font-size:52px;line-height:.92;letter-spacing:-.05em;margin:12px 0 10px;max-width:190px}
+    .hero-copy p{margin:0;font-size:13px;line-height:1.45;color:#605c57;max-width:210px}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);font-size:11px;color:#57534f;backdrop-filter:blur(10px)}
+    .pill-dot{width:7px;height:7px;border-radius:50%}
+    .hero-side{display:flex;flex-direction:column;gap:10px;justify-content:space-between}
+    .mini-card{padding:16px;border-radius:24px;background:rgba(255,255,255,.68);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.75);box-shadow:var(--shadow-soft);min-height:108px}
+    .mini-card .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .mini-card .value{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1;margin:14px 0 4px;letter-spacing:-.04em}
+    .mini-card .small{font-size:12px;color:#68635d;line-height:1.4}
+    .mini-card.dark{background:linear-gradient(160deg,#34362f 0%,#4b4e43 100%);color:#fff;border-color:rgba(255,255,255,.12)}
+    .mini-card.dark .label,.mini-card.dark .small{color:rgba(255,255,255,.72)}
+
+    .section{margin-top:18px}
+    .section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;margin:0 4px 10px}
+    .section-head h2{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:30px;letter-spacing:-.04em;font-weight:400}
+    .section-head p{margin:0;font-size:12px;color:var(--muted);text-align:right;max-width:140px;line-height:1.35}
+
+    .calendar-card{border-radius:32px;padding:18px 16px 16px;background:rgba(255,253,249,.82);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow)}
+    .calendar-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+    .month-wrap small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+    .month-wrap strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:32px;font-weight:400;line-height:1;letter-spacing:-.04em}
+    .legend{display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:flex-end}
+    .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+    .legend-item i{width:8px;height:8px;border-radius:50%;display:inline-block}
+    .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .weekdays{margin-bottom:8px}
+    .weekdays div{text-align:center;font-size:10px;color:#99938b;text-transform:uppercase}
+    .day{position:relative;min-height:60px;border:0;background:transparent;border-radius:18px;padding:8px 4px 18px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;cursor:pointer;transition:.2s ease}
+    .day:hover{background:rgba(238,230,221,.45)}
+    .day.outside{opacity:.22;cursor:default}
+    .day-num{font-size:13px;line-height:1.2}
+    .day.today{background:linear-gradient(180deg,#2f312c 0%,#44463c 100%);color:#fff;box-shadow:0 16px 24px rgba(46,47,40,.18)}
+    .day.selected:not(.today){outline:1px solid rgba(23,23,20,.18);background:#f2ebe3}
+    .day.course{box-shadow:inset 0 0 0 1px rgba(201,141,141,.22)}
+    .marks{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:32px}
+    .mark{width:6px;height:6px;border-radius:50%}
+    .mark.period{background:var(--rose)}
+    .mark.estro{background:var(--olive)}
+    .mark.utro{background:#7f6aa8}
+    .mark.rsleek{background:#d8b57d}
+    .mark.lymph{background:#93aab2}
+    .day.today .mark{box-shadow:0 0 0 1px rgba(255,255,255,.55)}
+    .day-detail{margin-top:14px;padding:14px;border-radius:22px;background:#fbf7f2;border:1px solid var(--line)}
+    .day-detail h3{margin:0 0 8px;font-family:Georgia,"Times New Roman",serif;font-size:21px;font-weight:400;letter-spacing:-.03em}
+    .detail-list{display:grid;gap:7px}
+    .detail-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:16px;background:#fffdf9;border:1px solid rgba(23,23,20,.06)}
+    .detail-item b{font-size:13px}
+    .detail-item span{font-size:12px;color:var(--muted)}
+    .empty{font-size:12px;color:var(--muted)}
+
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .info-card{border-radius:26px;padding:16px;background:rgba(255,253,249,.84);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft)}
+    .info-card.accent{background:linear-gradient(160deg,#f1e4de 0%,#f6f0e9 100%)}
+    .info-card.sage{background:linear-gradient(160deg,#e8edde 0%,#f7f3ec 100%)}
+    .info-card .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .info-card .v{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1;margin:12px 0 6px;letter-spacing:-.04em}
+    .info-card .t{font-size:12px;color:#6a655f;line-height:1.45}
+
+    .timeline{display:grid;gap:10px}
+    .timeline-item{display:flex;justify-content:space-between;gap:12px;padding:14px 14px;border-radius:18px;background:rgba(255,253,249,.76);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft)}
+    .timeline-item strong{display:block;font-size:14px}
+    .timeline-item span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+    .timeline-item time{font-size:12px;color:var(--muted);white-space:nowrap}
+
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .stat-card{padding:18px;border-radius:24px;background:rgba(255,253,249,.84);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft)}
+    .stat-card h3{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+    .stat-card strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:38px;font-weight:400;line-height:1;letter-spacing:-.04em;margin:14px 0 8px}
+    .stat-card p{margin:0;font-size:12px;color:#69645e;line-height:1.4}
+    .progress-list{display:grid;gap:10px}
+    .progress-item{padding:14px 15px;border-radius:20px;background:rgba(255,253,249,.8);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft)}
+    .progress-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:8px}
+    .bar{height:8px;border-radius:999px;background:#ede7df;overflow:hidden}
+    .bar > i{display:block;height:100%;border-radius:999px}
+    .bar.rose > i{background:var(--rose)}
+    .bar.olive > i{background:var(--olive)}
+    .bar.gold > i{background:#d8b57d}
+    .bar.blue > i{background:#93aab2}
+    .list-card{padding:16px;border-radius:24px;background:rgba(255,253,249,.84);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft)}
+    .list-card h3{margin:0 0 10px;font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:400;letter-spacing:-.04em}
+    .simple-list{display:grid;gap:10px}
+    .simple-row{display:flex;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:13px}
+    .simple-row:last-child{border-bottom:0;padding-bottom:0}
+    .simple-row span{color:var(--muted)}
+
+    .profile-card{padding:18px;border-radius:28px;background:rgba(255,253,249,.84);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow)}
+    .profile-name{font-family:Georgia,"Times New Roman",serif;font-size:30px;letter-spacing:-.04em;margin:12px 0 6px}
+    .profile-text{font-size:13px;color:#66615b;line-height:1.5}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .chip{padding:9px 12px;border-radius:999px;background:#fffdf9;border:1px solid var(--line);font-size:12px;color:#5b5751}
+
+    .fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);width:min(398px,calc(100% - 28px));z-index:30;border:0;border-radius:999px;padding:16px 18px;background:linear-gradient(180deg,#21221e 0%,#373930 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;box-shadow:0 20px 36px rgba(0,0,0,.18);cursor:pointer}
+    .fab strong{font-size:15px}
+    .fab span{font-size:12px;color:rgba(255,255,255,.7)}
+    .fab b{font-size:22px;font-weight:400}
+
+    .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,100%);z-index:25;padding:12px 14px calc(env(safe-area-inset-bottom) + 12px);background:rgba(250,245,238,.92);backdrop-filter:blur(22px);border-top:1px solid rgba(23,23,20,.06)}
+    .nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .nav-btn{border:0;background:transparent;border-radius:18px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;color:#857f79;cursor:pointer}
+    .nav-btn i{font-style:normal;font-size:18px;line-height:1}
+    .nav-btn span{font-size:11px}
+    .nav-btn.active{background:#fffdf8;color:#1f211d;box-shadow:var(--shadow-soft)}
+
+    .sheet-backdrop{position:fixed;inset:0;z-index:60;background:rgba(18,17,15,.36);display:none;align-items:flex-end;justify-content:center}
+    .sheet-backdrop.open{display:flex}
+    .sheet{width:min(430px,100%);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#f8f2ea 0%,#f5eee4 100%);border-radius:32px 32px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom) + 22px);box-shadow:0 -18px 44px rgba(0,0,0,.16)}
+    .handle{width:44px;height:4px;border-radius:999px;background:#d4cec4;margin:2px auto 18px}
+    .sheet h2{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:34px;font-weight:400;letter-spacing:-.04em}
+    .sheet-sub{margin:4px 0 18px;font-size:12px;color:var(--muted)}
+    .action-grid{display:grid;gap:10px}
+    .action-card{border:0;text-align:left;padding:16px;border-radius:22px;background:rgba(255,253,249,.88);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow-soft);display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+    .action-card strong{display:block;font-size:14px}
+    .action-card span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+    .action-card b{font-size:22px;font-weight:400;align-self:center}
+    .sheet-panel{display:none}
+    .sheet-panel.open{display:block}
+    .stepper{display:flex;align-items:center;justify-content:center;gap:18px;margin:22px 0}
+    .stepper button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fffdf9;font-size:24px;cursor:pointer}
+    .stepper strong{font-family:Georgia,"Times New Roman",serif;font-size:46px;font-weight:400;letter-spacing:-.04em}
+    .sheet-actions{display:grid;gap:10px}
+    .btn-primary,.btn-secondary{border:0;border-radius:18px;padding:15px 16px;cursor:pointer}
+    .btn-primary{background:linear-gradient(180deg,#1f211d 0%,#3a3d33 100%);color:#fff;font-weight:600}
+    .btn-secondary{background:#fffdf9;color:#635e58;border:1px solid var(--line)}
+    .toggle-row{display:grid;gap:10px}
+    .toggle-option{display:flex;justify-content:space-between;gap:12px;padding:14px;border-radius:18px;background:#fffdf9;border:1px solid var(--line)}
+
+    .error-state{min-height:100vh;display:grid;place-items:center;text-align:center;padding:32px;color:var(--muted)}
+    .hidden{display:none !important}
+    @media (max-width:380px){
+      .hero-grid,.two-col,.stats-grid{grid-template-columns:1fr}
+      .legend{justify-content:flex-start}
+      .hero-copy h1{max-width:none}
+      .hero-copy p{max-width:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="glow a"></div>
+    <div class="glow b"></div>
+    <main class="app" id="app"><div class="error-state">Загружаю приложение…</div></main>
+  </div>
+
+  <button class="fab hidden" id="openSheetBtn">
+    <div>
+      <strong>Отметить сегодня</strong>
+      <span>быстро добавить действие</span>
+    </div>
+    <b>＋</b>
+  </button>
+
+  <nav class="bottom-nav hidden" id="bottomNav">
+    <div class="nav-grid">
+      <button class="nav-btn active" data-tab="today"><i>◔</i><span>Сегодня</span></button>
+      <button class="nav-btn" data-tab="calendar"><i>▦</i><span>Календарь</span></button>
+      <button class="nav-btn" data-tab="stats"><i>◫</i><span>Статистика</span></button>
+      <button class="nav-btn" data-tab="profile"><i>◎</i><span>Профиль</span></button>
+    </div>
+  </nav>
+
+  <div class="sheet-backdrop" id="sheetBackdrop">
+    <div class="sheet">
+      <div class="handle"></div>
+      <div id="sheetHome">
+        <h2>Отметить сегодня</h2>
+        <div class="sheet-sub" id="sheetDateText"></div>
+        <div class="action-grid">
+          <button class="action-card" data-panel="estro">
+            <div><strong>Эстрожель</strong><span>указать количество нажатий</span></div><b>+</b>
+          </button>
+          <button class="action-card" data-panel="newBottle">
+            <div><strong>Новая бутылка</strong><span>обнулить счётчик и начать заново</span></div><b>↺</b>
+          </button>
+          <button class="action-card" data-panel="utro">
+            <div><strong>Утрожестан</strong><span>подтвердить приём за сегодня</span></div><b>✓</b>
+          </button>
+          <button class="action-card" data-panel="rsleek">
+            <div><strong>R-Sleek</strong><span>отметить процедуру</span></div><b>+</b>
+          </button>
+          <button class="action-card" data-panel="lymph">
+            <div><strong>Лимфодренажный</strong><span>отметить массаж</span></div><b>+</b>
+          </button>
+          <button class="action-card" data-panel="period">
+            <div><strong>Месячные</strong><span>отметить день цикла</span></div><b>+</b>
+          </button>
+        </div>
+      </div>
+      <div id="sheetPanel" class="sheet-panel"></div>
+    </div>
+  </div>
+
+<script>
+const fallbackData = {
+  "app": {
+    "name": "MUSE",
+    "subtitle": "cycle & care"
+  },
+  "displayMonth": "2026-10",
+  "today": "2026-10-06",
+  "profile": {
+    "name": "Пользователь",
+    "theme": "Editorial feminine",
+    "sharedMode": "личный дневник"
+  },
+  "cycle": {
+    "currentDay": "—",
+    "avgLength": null,
+    "previousCycles": [],
+    "periodDays": [],
+    "nextPeriodEstimate": null
+  },
+  "estrogel": {
+    "todayPresses": 0,
+    "bottlePressCount": 0,
+    "bottleStarted": null,
+    "daily": {},
+    "bottleHistory": []
+  },
+  "utrogestan": {
+    "startDay": null,
+    "courseLengthDays": null,
+    "dose": "",
+    "takenDates": []
+  },
+  "massages": {
+    "monthlyGoal": {
+      "rsleek": 6,
+      "lymph": 4
+    },
+    "rsleek": [],
+    "lymph": []
+  },
+  "examples": []
+};
+
+let data = null;
+let activeTab = 'today';
+let selectedDate = null;
+
+const monthsRU = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function safeDate(iso){ return new Date(iso + 'T12:00:00'); }
+function formatLongDate(iso){ return safeDate(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long'}); }
+function formatShortDate(iso){ if(!iso) return '—'; return safeDate(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'short'}); }
+function displayMonthParts(){ const [y,m]=data.displayMonth.split('-').map(Number); return {year:y,month:m}; }
+function inDisplayMonth(iso){ return iso && iso.startsWith(data.displayMonth); }
+function countInDisplayMonth(arr){ return arr.filter(inDisplayMonth).length; }
+function uniquePush(arr,val){ if(!arr.includes(val)) arr.push(val); }
+function sortedExamples(){
+  return [...(data.examples||[])].sort((a,b)=> safeDate(b.date)-safeDate(a.date));
+}
+function syncExamples(type, value, date = data.today){
+  data.examples = data.examples || [];
+  data.examples = data.examples.filter(x => !(x.type===type && x.date===date));
+  data.examples.unshift({date, type, value});
+  data.examples = data.examples
+    .sort((a,b)=> safeDate(b.date)-safeDate(a.date))
+    .slice(0,10);
+}
+function nextPeriodCaption(){
+  if(!data.cycle.nextPeriodEstimate) return 'Следующая дата цикла не указана';
+  return 'Ориентировочно: ' + formatLongDate(data.cycle.nextPeriodEstimate);
+}
+function cycleAvg(){
+  const arr = data.cycle.previousCycles || [];
+  if(!arr.length) return data.cycle.avgLength || '—';
+  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+}
+function estroAvgMonth(){
+  const values = Object.entries(data.estrogel.daily || {}).filter(([date])=> inDisplayMonth(date)).map(([,n])=> Number(n)||0);
+  if(!values.length) return 0;
+  return (values.reduce((a,b)=>a+b,0) / values.length).toFixed(1);
+}
+function utroMonthTaken(){ return countInDisplayMonth(data.utrogestan.takenDates || []); }
+function utroCourseProgress(){
+  if(!data.utrogestan.startDay || !data.utrogestan.courseLengthDays) return {done:utroMonthTaken(),total:0};
+  const total = data.utrogestan.courseLengthDays || 14;
+  const start = data.utrogestan.startDay || 11;
+  const month = displayMonthParts().month;
+  const year = displayMonthParts().year;
+  let done = 0;
+  for(let i=0;i<total;i++){
+    const day = start + i;
+    const iso = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    if((data.utrogestan.takenDates || []).includes(iso)) done++;
+  }
+  return {done,total};
+}
+function isUtroScheduled(iso){
+  if(!data.utrogestan.startDay || !data.utrogestan.courseLengthDays) return false;
+  const d = safeDate(iso);
+  const monthMatch = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` === data.displayMonth;
+  if(!monthMatch) return false;
+  const day = d.getDate();
+  const start = data.utrogestan.startDay || 11;
+  const end = start + (data.utrogestan.courseLengthDays || 14) - 1;
+  return day >= start && day <= end;
+}
+function hasPeriod(iso){ return (data.cycle.periodDays || []).includes(iso); }
+function marksFor(iso){
+  const result=[];
+  if(hasPeriod(iso)) result.push({key:'period',label:'Месячные',value:'отмечен день цикла'});
+  if(data.estrogel.daily && data.estrogel.daily[iso]) result.push({key:'estro',label:'Эстрожель',value:`${data.estrogel.daily[iso]} нажатия`});
+  if((data.utrogestan.takenDates || []).includes(iso)) result.push({key:'utro',label:'Утрожестан',value:'приём подтверждён'});
+  if((data.massages.rsleek || []).includes(iso)) result.push({key:'rsleek',label:'R-Sleek',value:'процедура'});
+  if((data.massages.lymph || []).includes(iso)) result.push({key:'lymph',label:'Лимфодренажный',value:'массаж'});
+  return result;
+}
+function todayStatusText(){
+  const parts=[];
+  parts.push(`Эстрожель ${data.estrogel.todayPresses}`);
+  parts.push((data.utrogestan.takenDates || []).includes(data.today) ? 'Утрожестан отмечен' : 'Утрожестан не отмечен');
+  if((data.massages.rsleek || []).includes(data.today)) parts.push('R-Sleek');
+  if((data.massages.lymph || []).includes(data.today)) parts.push('Лимфодренажный');
+  return parts.join(' · ');
+}
+
+function navHTML(){
+  return `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">${data.app.subtitle}</div>
+        <div class="page-title">${activeTab === 'today' ? 'Today journal' : activeTab === 'calendar' ? 'Monthly calendar' : activeTab === 'stats' ? 'Care statistics' : 'Profile & settings'}</div>
+        <div class="top-note">${activeTab === 'today' ? 'Главное — быстро понять свой день' : activeTab === 'calendar' ? 'Месяц целиком с отметками и деталями' : activeTab === 'stats' ? 'Цикл, процедуры и привычки в одной ленте' : 'Твои параметры, курсы и режим приложения'}</div>
+      </div>
+      <div class="avatar">${(data.profile?.name || 'V').slice(0,1)}</div>
+    </header>`;
+}
+
+function heroHTML(){
+  const next = nextPeriodCaption();
+  const bottleSince = formatShortDate(data.estrogel.bottleStarted);
+  return `
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">editorial feminine</div>
+          <h1>${data.cycle.currentDay} день цикла</h1>
+          <p>${next}. Сегодня видно всё важное: цикл, Эстрожель, Утрожестан и процедуры без ощущения перегруженного трекера.</p>
+          <div class="hero-meta">
+            <span class="pill"><i class="pill-dot" style="background:var(--rose)"></i>цикл</span>
+            <span class="pill"><i class="pill-dot" style="background:var(--olive)"></i>Эстрожель ${data.estrogel.todayPresses}</span>
+            <span class="pill"><i class="pill-dot" style="background:#7f6aa8"></i>курс ${data.utrogestan.startDay ? data.utrogestan.startDay + '–' + (data.utrogestan.startDay + data.utrogestan.courseLengthDays - 1) : 'не задан'}</span>
+          </div>
+        </div>
+        <div class="hero-side">
+          <article class="mini-card dark">
+            <div class="label">текущее нажатие</div>
+            <div class="value">${data.estrogel.bottlePressCount}</div>
+            <div class="small">с новой бутылки<br>с ${bottleSince}</div>
+          </article>
+          <article class="mini-card">
+            <div class="label">статус дня</div>
+            <div class="small" style="margin-top:16px;font-size:13px;line-height:1.5;color:#5d5953">${todayStatusText()}</div>
+          </article>
+        </div>
+      </div>
+    </section>`;
+}
+
+function calendarGridHTML(showOutside = true){
+  const {year,month} = displayMonthParts();
+  const first = new Date(year, month - 1, 1);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDay = (first.getDay() + 6) % 7;
+  const prevMonthDays = new Date(year, month - 1, 0).getDate();
+  let cells = [];
+
+  if(showOutside){
+    for(let i=0;i<firstDay;i++){
+      const dayNum = prevMonthDays - firstDay + i + 1;
+      cells.push(`<div class="day outside"><span class="day-num">${dayNum}</span></div>`);
+    }
+  } else {
+    for(let i=0;i<firstDay;i++) cells.push('<div class="day outside"></div>');
+  }
+
+  for(let day=1; day<=daysInMonth; day++){
+    const iso = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const marks = marksFor(iso);
+    const classes = ['day'];
+    if(iso === data.today) classes.push('today');
+    if(selectedDate === iso) classes.push('selected');
+    if(isUtroScheduled(iso)) classes.push('course');
+    cells.push(`
+      <button class="${classes.join(' ')}" data-date="${iso}">
+        <span class="day-num">${day}</span>
+        <span class="marks">${marks.slice(0,4).map(mark => `<i class="mark ${mark.key}"></i>`).join('')}</span>
+      </button>
+    `);
+  }
+
+  while(cells.length % 7 !== 0){
+    const extraDay = cells.length - (firstDay + daysInMonth) + 1;
+    cells.push(showOutside ? `<div class="day outside"><span class="day-num">${extraDay}</span></div>` : '<div class="day outside"></div>');
+  }
+
+  return `
+    <div class="weekdays">
+      <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+    </div>
+    <div class="days">${cells.join('')}</div>`;
+}
+
+function dayDetailHTML(date = selectedDate || data.today){
+  const marks = marksFor(date);
+  let extra = '';
+  if(isUtroScheduled(date) && !(data.utrogestan.takenDates || []).includes(date)){
+    extra = `<div class="detail-item"><b>Утрожестан</b><span>по графику, ещё не отмечен</span></div>`;
+  }
+  return `
+    <div class="day-detail" id="dayDetailBox">
+      <h3>${formatLongDate(date)}</h3>
+      <div class="detail-list">
+        ${marks.length ? marks.map(item => `<div class="detail-item"><b>${item.label}</b><span>${item.value}</span></div>`).join('') : '<div class="empty">На этот день пока нет отметок.</div>'}
+        ${extra}
+      </div>
+    </div>`;
+}
+
+function calendarCardHTML(withSectionTitle = true){
+  const {year,month} = displayMonthParts();
+  return `
+    ${withSectionTitle ? `<div class="section-head"><h2>Календарь месяца</h2><p>Текущий месяц и ваши отметки.</p></div>` : ''}
+    <section class="calendar-card">
+      <div class="calendar-head">
+        <div class="month-wrap"><small>${year}</small><strong>${monthsRU[month-1]}</strong></div>
+        <div class="legend">
+          <span class="legend-item"><i style="background:var(--rose)"></i>цикл</span>
+          <span class="legend-item"><i style="background:var(--olive)"></i>гель</span>
+          <span class="legend-item"><i style="background:#7f6aa8"></i>утро</span>
+          <span class="legend-item"><i style="background:#d8b57d"></i>R-Sleek</span>
+          <span class="legend-item"><i style="background:#93aab2"></i>лимфо</span>
+        </div>
+      </div>
+      ${calendarGridHTML(true)}
+      ${dayDetailHTML()}
+    </section>`;
+}
+
+function todayViewHTML(){
+  const utro = utroCourseProgress();
+  return `
+    ${navHTML()}
+    ${heroHTML()}
+    <section class="section">
+      ${calendarCardHTML(true)}
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Коротко за месяц</h2><p>Быстрый обзор ключевых действий без перегруза.</p></div>
+      <div class="two-col">
+        <article class="info-card accent"><div class="k">Утрожестан</div><div class="v">${utro.done}/${utro.total}</div><div class="t">отмечено дней текущего курса</div></article>
+        <article class="info-card sage"><div class="k">Эстрожель</div><div class="v">${estroAvgMonth()}</div><div class="t">среднее нажатий в день за месяц</div></article>
+        <article class="info-card"><div class="k">R-Sleek</div><div class="v">${countInDisplayMonth(data.massages.rsleek)}</div><div class="t">процедуры в этом месяце</div></article>
+        <article class="info-card"><div class="k">Лимфодренаж</div><div class="v">${countInDisplayMonth(data.massages.lymph)}</div><div class="t">процедуры в этом месяце</div></article>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Последние отметки</h2><p>Последние приёмы и процедуры.</p></div>
+      <div class="timeline">
+        ${sortedExamples().slice(0,5).map(item => `
+          <article class="timeline-item">
+            <div><strong>${item.type}</strong><span>${item.value}</span></div>
+            <time>${formatShortDate(item.date)}</time>
+          </article>`).join('')}
+      </div>
+    </section>`;
+}
+
+function calendarViewHTML(){
+  return `
+    ${navHTML()}
+    ${calendarCardHTML(false)}
+    <section class="section">
+      <div class="section-head"><h2>Метки месяца</h2><p>Период, приёмы и процедуры читаются прямо с сетки календаря.</p></div>
+      <div class="two-col">
+        <article class="info-card accent"><div class="k">Следующие месячные</div><div class="v" style="font-size:28px">${formatShortDate(data.cycle.nextPeriodEstimate)}</div><div class="t">ориентировочная дата</div></article>
+        <article class="info-card sage"><div class="k">Средний цикл</div><div class="v">${cycleAvg()}</div><div class="t">дней по последним циклам</div></article>
+      </div>
+    </section>`;
+}
+
+function statsViewHTML(){
+  const utro = utroCourseProgress();
+  const rsMonth = countInDisplayMonth(data.massages.rsleek);
+  const lymphMonth = countInDisplayMonth(data.massages.lymph);
+  const rsGoal = data.massages.monthlyGoal?.rsleek || 1;
+  const lymphGoal = data.massages.monthlyGoal?.lymph || 1;
+  return `
+    ${navHTML()}
+    <section class="section" style="margin-top:0">
+      <div class="stats-grid">
+        <article class="stat-card"><h3>Средний цикл</h3><strong>${cycleAvg()}</strong><p>дней по последним циклам</p></article>
+        <article class="stat-card"><h3>Текущее нажатие</h3><strong>${data.estrogel.bottlePressCount}</strong><p>с новой бутылки</p></article>
+        <article class="stat-card"><h3>Эстрожель / день</h3><strong>${estroAvgMonth()}</strong><p>среднее значение за месяц</p></article>
+        <article class="stat-card"><h3>Утрожестан</h3><strong>${utro.done}/${utro.total}</strong><p>отмечено дней курса</p></article>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Прогресс месяца</h2><p>Приёмы и процедуры за текущий месяц.</p></div>
+      <div class="progress-list">
+        <div class="progress-item">
+          <div class="progress-row"><b>R-Sleek</b><span>${rsMonth} из ${rsGoal}</span></div>
+          <div class="bar gold"><i style="width:${rsGoal ? Math.min(100, rsMonth/rsGoal*100) : 0}%"></i></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-row"><b>Лимфодренажный массаж</b><span>${lymphMonth} из ${lymphGoal}</span></div>
+          <div class="bar blue"><i style="width:${lymphGoal ? Math.min(100, lymphMonth/lymphGoal*100) : 0}%"></i></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-row"><b>Утрожестан</b><span>${utro.done} из ${utro.total}</span></div>
+          <div class="bar rose"><i style="width:${utro.total ? Math.min(100, utro.done/utro.total*100) : 0}%"></i></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-row"><b>Эстрожель в этом месяце</b><span>${Object.keys(data.estrogel.daily || {}).filter(inDisplayMonth).length} дней</span></div>
+          <div class="bar olive"><i style="width:${Math.min(100, Object.keys(data.estrogel.daily || {}).filter(inDisplayMonth).length/31*100)}%"></i></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="list-card">
+        <h3>История бутылок</h3>
+        <div class="simple-list">
+          ${(data.estrogel.bottleHistory || []).map(item => `
+            <div class="simple-row"><b>${formatShortDate(item.started)}</b><span>${item.current ? 'текущая · ' : ''}${item.totalPresses} нажатий</span></div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`;
+}
+
+function profileViewHTML(){
+  return `
+    ${navHTML()}
+    <section class="profile-card">
+      <div class="eyebrow">личный режим</div>
+      <div class="profile-name">${data.profile?.name || 'Пользователь'}</div>
+      <div class="profile-text">Ваши отметки сохраняются в этом браузере на этом устройстве. При смене устройства история не переносится автоматически.</div>
+      <div class="chips">
+        <span class="chip">Эстрожель ежедневно</span>
+        <span class="chip">Утрожестан: ${data.utrogestan.startDay ? 'с ' + data.utrogestan.startDay + ' числа' : 'график не задан'}</span>
+        <span class="chip">${data.utrogestan.courseLengthDays ? data.utrogestan.courseLengthDays + ' дней курса' : 'длительность не задана'}</span>
+        <span class="chip">${data.profile?.theme || 'Editorial feminine'}</span>
+      </div>
+    </section>
+    <section class="section">
+      <div class="list-card">
+        <h3>Настройки трекинга</h3>
+        <div class="simple-list">
+          <div class="simple-row"><b>Эстрожель</b><span>учёт нажатий с новой бутылки</span></div>
+          <div class="simple-row"><b>Утрожестан</b><span>${data.utrogestan.dose || 'дозировка не указана'} · ежедневное подтверждение</span></div>
+          <div class="simple-row"><b>Массажи</b><span>R-Sleek и лимфодренажный</span></div>
+          <div class="simple-row"><b>Главное действие</b><span>«Отметить сегодня»</span></div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  selectedDate = selectedDate || data.today;
+  let html = '';
+  if(activeTab === 'today') html = todayViewHTML();
+  if(activeTab === 'calendar') html = calendarViewHTML();
+  if(activeTab === 'stats') html = statsViewHTML();
+  if(activeTab === 'profile') html = profileViewHTML();
+  app.innerHTML = html;
+  document.getElementById('openSheetBtn').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  bindMainEvents();
+}
+
+function bindMainEvents(){
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === activeTab);
+    btn.onclick = () => { activeTab = btn.dataset.tab; render(); };
+  });
+
+  document.querySelectorAll('.day[data-date]').forEach(btn => {
+    btn.onclick = () => {
+      selectedDate = btn.dataset.date;
+      render();
+    };
+  });
+
+  document.getElementById('openSheetBtn').onclick = openSheet;
+}
+
+function openSheet(){
+  document.getElementById('sheetBackdrop').classList.add('open');
+  document.getElementById('sheetDateText').textContent = formatLongDate(data.today);
+  showSheetHome();
+}
+function closeSheet(){ document.getElementById('sheetBackdrop').classList.remove('open'); }
+function showSheetHome(){
+  document.getElementById('sheetHome').style.display = 'block';
+  const panel = document.getElementById('sheetPanel');
+  panel.className = 'sheet-panel';
+  panel.innerHTML = '';
+}
+function backButtonHTML(){ return '<button class="btn-secondary" id="backSheet">Назад</button>'; }
+function actionDone(close = true){ saveData(); render(); if(close) closeSheet(); }
+function openPanel(type){
+  document.getElementById('sheetHome').style.display = 'none';
+  const panel = document.getElementById('sheetPanel');
+  panel.className = 'sheet-panel open';
+
+  if(type === 'estro'){
+    let count = data.estrogel.todayPresses;
+    panel.innerHTML = `
+      <h2>Эстрожель</h2>
+      <div class="sheet-sub">Сколько нажатий сегодня ты сделала?</div>
+      <div class="stepper">
+        <button id="minusBtn">−</button>
+        <strong id="countValue">${count}</strong>
+        <button id="plusBtn">+</button>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn-primary" id="saveEstro">Сохранить</button>
+        ${backButtonHTML()}
+      </div>`;
+    panel.querySelector('#minusBtn').onclick = () => { count = Math.max(0, count - 1); panel.querySelector('#countValue').textContent = count; };
+    panel.querySelector('#plusBtn').onclick = () => { count += 1; panel.querySelector('#countValue').textContent = count; };
+    panel.querySelector('#saveEstro').onclick = () => {
+      const prev = Number(data.estrogel.daily[data.today] || 0);
+      data.estrogel.todayPresses = count;
+      data.estrogel.daily[data.today] = count;
+      data.estrogel.bottlePressCount = Math.max(0, data.estrogel.bottlePressCount - prev + count);
+      const currentBottle = (data.estrogel.bottleHistory || []).find(item => item.current);
+      if(currentBottle) currentBottle.totalPresses = data.estrogel.bottlePressCount;
+      syncExamples('Эстрожель', `${count} нажатия`);
+      actionDone();
+    };
+  }
+
+  if(type === 'newBottle'){
+    panel.innerHTML = `
+      <h2>Новая бутылка</h2>
+      <div class="sheet-sub">Счётчик нажатий начнётся заново с сегодняшней даты.</div>
+      <div class="toggle-row">
+        <div class="toggle-option"><b>Текущая бутылка</b><span>${data.estrogel.bottlePressCount} нажатий</span></div>
+        <div class="toggle-option"><b>Новая стартовая дата</b><span>${formatLongDate(data.today)}</span></div>
+      </div>
+      <div class="sheet-actions" style="margin-top:18px">
+        <button class="btn-primary" id="saveBottle">Начать новую бутылку</button>
+        ${backButtonHTML()}
+      </div>`;
+    panel.querySelector('#saveBottle').onclick = () => {
+      data.estrogel.bottleHistory = data.estrogel.bottleHistory || [];
+      data.estrogel.bottleHistory.forEach(item => item.current = false);
+      data.estrogel.bottleStarted = data.today;
+      data.estrogel.bottlePressCount = data.estrogel.todayPresses || 0;
+      data.estrogel.bottleHistory.unshift({started:data.today,totalPresses:data.estrogel.bottlePressCount,current:true});
+      syncExamples('Новая бутылка', 'счётчик обнулён');
+      actionDone();
+    };
+  }
+
+  if(['utro','rsleek','lymph','period'].includes(type)){
+    const map = {
+      utro:{title:'Утрожестан', sub:'Подтвердить приём за сегодня?', typeLabel:'Утрожестан', value:'приём подтверждён', apply:() => uniquePush(data.utrogestan.takenDates, data.today)},
+      rsleek:{title:'R-Sleek', sub:'Добавить процедуру в календарь?', typeLabel:'R-Sleek', value:'процедура', apply:() => uniquePush(data.massages.rsleek, data.today)},
+      lymph:{title:'Лимфодренажный', sub:'Добавить массаж за сегодня?', typeLabel:'Лимфодренажный массаж', value:'процедура', apply:() => uniquePush(data.massages.lymph, data.today)},
+      period:{title:'Месячные', sub:'Добавить отметку цикла за сегодня?', typeLabel:'Месячные', value:'отмечен день цикла', apply:() => uniquePush(data.cycle.periodDays, data.today)}
+    };
+    const item = map[type];
+    panel.innerHTML = `
+      <h2>${item.title}</h2>
+      <div class="sheet-sub">${item.sub}</div>
+      <div class="sheet-actions">
+        <button class="btn-primary" id="confirmAction">Да, отметить</button>
+        ${backButtonHTML()}
+      </div>`;
+    panel.querySelector('#confirmAction').onclick = () => {
+      item.apply();
+      syncExamples(item.typeLabel, item.value);
+      actionDone();
+    };
+  }
+
+  const backBtn = panel.querySelector('#backSheet');
+  if(backBtn) backBtn.onclick = showSheetHome;
+}
+
+function bindSheetEvents(){
+  document.querySelectorAll('.action-card').forEach(btn => btn.onclick = () => openPanel(btn.dataset.panel));
+  const backdrop = document.getElementById('sheetBackdrop');
+  backdrop.addEventListener('click', (e) => { if(e.target.id === 'sheetBackdrop') closeSheet(); });
+}
+
+function storageKey(){
+  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  return 'muse-journal-v1-' + (userId || 'browser');
+}
+function localToday(){
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+}
+function refreshDate(){
+  const today = localToday();
+  const previous = data.today;
+  data.today = today;
+  data.displayMonth = today.slice(0,7);
+  data.estrogel.todayPresses = Number(data.estrogel.daily?.[today] || 0);
+  if(!selectedDate || selectedDate === previous) selectedDate = today;
+  return previous !== today;
+}
+function saveData(){
+  try { localStorage.setItem(storageKey(), JSON.stringify(data)); }
+  catch(err) { window.alert('Не удалось сохранить отметку на устройстве. Проверьте доступность хранилища перед закрытием приложения.'); }
+}
+async function loadData(){
+  const tg = window.Telegram?.WebApp;
+  if(tg){ tg.ready(); tg.expand(); }
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(storageKey()) || 'null'); } catch(err) {}
+  if(saved?.cycle && saved?.estrogel && saved?.utrogestan && saved?.massages){
+    data = saved;
+  } else {
+    try {
+      const response = await fetch('data.json?v=' + Date.now(), {cache:'no-store'});
+      if(!response.ok) throw new Error('bad fetch');
+      data = await response.json();
+    } catch(err){ data = deepClone(fallbackData); }
+  }
+  refreshDate();
+  bindSheetEvents();
+  render();
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && data && refreshDate()) render();
+});
+setInterval(() => { if(data && refreshDate()) render(); }, 60000);
+
+loadData();
+</script>
+</body>
+</html>
