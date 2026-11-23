@@ -49,6 +49,106 @@
 
 .training-split-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.training-split-actions button{font-size:11px;padding:11px 6px;line-height:1.4;min-height:45px}.training-ledger-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;border:1px solid white;border-radius:17px;background:#ffffff60;margin:20px 0 16px}.training-ledger-tabs button{border:0;background:transparent;color:#667d5c;font:13px var(--font);min-height:42px;border-radius:12px;padding:10px}.training-ledger-tabs button[aria-selected=true]{background:linear-gradient(125deg,#dce6d3,#c7d8bd);color:#315b37;box-shadow:inset 0 1px 2px #fff9}.training-ledger-totals{display:flex;justify-content:center;gap:22px;margin:17px 0 0;font-size:12px;color:#6b805f}.training-ledger-totals b{font-weight:500;color:#466d42;margin-left:4px}.training-ledger-caption{font-size:12px;line-height:1.7;color:#72876a;margin:-3px 0 15px}.training-empty-ledger{font-size:12px;color:#788b6f;line-height:1.8;margin:15px 0}.training-ledger-description{display:block;font-size:11px;line-height:1.6;color:#7a8c71;margin-top:5px}.training-session-row b{font-size:12px;font-weight:500;color:#4e7348}.training-manager-balance{margin-bottom:12px}@media(max-width:359px){.training-split-actions button{font-size:10px}.training-ledger-totals{gap:16px}}
 
+#bottomNav .nav-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+#bottomNav .nav-btn i svg{width:20px;height:20px;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.notes-archive-month{margin-top:21px}
+.notes-archive-entry{margin-top:9px}
+.notes-archive-entry summary{display:grid;grid-template-columns:minmax(0,1fr) auto 12px;gap:8px;list-style:none;cursor:pointer}
+.notes-archive-entry summary::-webkit-details-marker{display:none}
+.notes-archive-entry summary::marker{content:''}
+.notes-archive-entry time{font-size:15px;font-weight:500;color:var(--ink)}
+.notes-archive-cycle{padding:4px 8px;border-radius:99px;background:#dce6d3;color:#365539;font-size:11px}
+.notes-archive-chevron{color:#526651;line-height:1}
+.notes-archive-preview{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;grid-column:1/-1;margin:0}
+.notes-archive-entry[open] .notes-archive-preview{display:none}
+.notes-archive-entry[open] .notes-archive-chevron{transform:rotate(180deg)}
+.notes-archive-full{margin:4px 0 7px}
+.notes-archive-add{margin-top:13px}
+@media(max-width:359px){#bottomNav .nav-btn span{font-size:9px}.notes-archive-cycle{font-size:10px}}
+
+/* Shared material taken from the approved Notes cards. */
+:root{
+  --pearl-card-fill:linear-gradient(130deg,#ffffff75,#fffaf331);
+  --pearl-card-edge:1px solid #ffffffed;
+  --pearl-card-shadow:inset 0 1px 2px #fff9;
+  --pearl-card-radius:21px;
+  --pearl-card-gap:12px;
+  --pearl-card-title:#325b3c;
+  --pearl-card-copy:#3c6245;
+  --pearl-card-muted:#526651;
+  --pearl-pill:#dce6d3;
+  --pearl-pill-ink:#365539;
+}
+
+.app :is(.day-note-card,.calendar-card,.journal-day,.month-picker,.metric-mini,
+  .routine-list,.list-card,.profile-banner,.backup-card,.auto-backup-card,
+  .training-card,.today-notes-link),
+.app .stats-grid .stat-card{
+  background:var(--pearl-card-fill);
+  border:var(--pearl-card-edge);
+  box-shadow:var(--pearl-card-shadow);
+  border-radius:var(--pearl-card-radius);
+  backdrop-filter:blur(8px);
+}
+.app .training-card.training-low{
+  background:linear-gradient(130deg,#f5dde2b8,#fffaf477);
+}
+
+.app :is(.section-head h2,.training-card h2,.journal-day h3,.backup-card h3,
+  .auto-backup-card h3,.month-picker strong,.calendar-head strong){
+  color:var(--pearl-card-title);
+  font-weight:500;
+}
+.app :is(.calendar-head small,.month-picker small,.record-copy span,.history-row small,
+  .profile-banner p,.backup-card p,.auto-backup-card p,.pearl-page-note,
+  .legend-item,.metric-mini small,.stat-card p){color:var(--pearl-card-muted)}
+.app :is(.notes-archive-cycle,.history-label,.today-link,.filter-btn.active){
+  background:var(--pearl-pill);
+  color:var(--pearl-pill-ink);
+}
+.app :is(.metric-pair,.stats-grid){gap:var(--pearl-card-gap)}
+.app :is(.metric-mini,.stat-card){padding:16px 14px;min-width:0}
+.app .stats-grid .stat-card h3{
+  color:var(--pearl-card-title);
+  font:500 13px var(--font);
+  padding-right:22px;
+  text-transform:none;
+  letter-spacing:0;
+}
+.app :is(.metric-mini strong,.stats-grid .stat-card strong){
+  color:var(--ink);
+  font:400 33px/1.12 var(--font);
+}
+.app :is(.profile-banner,.calendar-card,.journal-day,.backup-card,.auto-backup-card){
+  padding:17px 14px;
+}
+
+/* The reference artwork still owns the cycle, medication and massage composition. */
+.is-reference-home .reference-stage{margin-bottom:0}
+.today-notes-link{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:calc(100% - 28px);
+  min-height:50px;
+  margin:0 14px;
+  padding:12px 14px;
+  color:var(--pearl-card-title);
+  font:500 13px var(--font);
+  text-align:left;
+}
+.today-notes-link .today-notes-label{display:flex;align-items:center;gap:8px}
+.today-notes-link svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round;flex:none}
+.is-reference-home .training-card{margin:var(--pearl-card-gap) 14px 0}
+
+@media(max-width:359px){
+  .app :is(.calendar-card,.journal-day,.metric-mini,.stat-card){padding:14px 10px}
+  .app .stats-grid .stat-card h3{padding-right:16px}
+  .today-notes-link{margin-inline:12px;width:calc(100% - 24px)}
+  .is-reference-home .training-card{margin-inline:12px}
+}
+
 </style>
 </head>
 <body>
@@ -619,6 +719,7 @@ function render(){
   if(activeTab === 'calendar') html = calendarViewHTML();
   if(activeTab === 'stats') html = statsViewHTML();
   if(activeTab === 'profile') html = profileViewHTML();
+  if(activeTab === 'notes') html = notesViewHTML();
   app.innerHTML = html;
   document.getElementById('openSheetBtn').classList.remove('hidden');
   document.getElementById('bottomNav').classList.remove('hidden');
@@ -1188,7 +1289,7 @@ const renderBeforeReference=render;
 render=function(){renderBeforeReference();document.querySelector('.shell').classList.toggle('is-reference-home',activeTab==='today')};
 
 // Optional date-keyed free text. Old journals and old backup files need no migration.
-fallbackData.notes={};
+fallbackData.notes??={};
 const DAY_NOTE_LIMIT=10000;
 let activeDayNoteEditor=null;
 function dayNotes(){if(!data.notes||typeof data.notes!=='object'||Array.isArray(data.notes))data.notes={};return data.notes}
@@ -1229,7 +1330,10 @@ dayDetailHTML=function(date=selectedDate||data.today){return detailBeforeNotes(d
 const gridBeforeNotes=calendarGridHTML;
 calendarGridHTML=function(...args){return gridBeforeNotes(...args).replace(/(<button\b[^>]*data-date="([^"]+)"[^>]*>)([\s\S]*?)(<\/button>)/g,(_,head,date,body,end)=>dayNote(date)?head.replace(/aria-label="([^"]*)"/,'aria-label="$1 · есть заметка"')+body+'<span class="day-note-mark" aria-hidden="true">'+noteIcon()+'</span>'+end:head+body+end)};
 const todayBeforeNotes=todayViewHTML;
-todayViewHTML=function(){const original=todayBeforeNotes(),button='<button class="reference-note-link" data-open-day-note="'+data.today+'">'+noteIcon()+'<span>Мои ощущения сегодня</span>'+(dayNote(data.today)?'<span class="note-exists-dot" aria-hidden="true"></span>':'')+'</button>';return original.replace(/<\/div>$/,()=>button+'</div>')};
+todayViewHTML=function(){
+ const noteIndicator=dayNote(data.today)?'<span class="note-exists-dot" aria-hidden="true"></span>':'';
+ return todayBeforeNotes()+'<button type="button" class="today-notes-link" data-open-day-note="'+data.today+'"><span class="today-notes-label">'+noteIcon()+'Мои ощущения сегодня'+noteIndicator+'</span><span aria-hidden="true">›</span></button>';
+};
 const bindBeforeNotes=bindMainEvents;
 bindMainEvents=function(){bindBeforeNotes();document.querySelectorAll('[data-open-day-note]').forEach(button=>button.onclick=()=>openDayNote(button.dataset.openDayNote))};
 const renderBeforeNotes=render;
@@ -1331,6 +1435,51 @@ openTrainingDay=function(date=null){
 };
 const bindBeforeSeparatedTraining=bindMainEvents;
 bindMainEvents=function(){bindBeforeSeparatedTraining();document.querySelectorAll('[data-training-session-new]').forEach(button=>button.onclick=()=>openTrainingDay())};
+
+function recordedCycleStarts(periodDays){
+  const dates=[...new Set(periodDays.filter(validISO))].sort();
+  return dates.filter((date,index)=>index===0 || Date.parse(date)-Date.parse(dates[index-1])>86400000);
+}
+
+function notesViewHTML(){
+  const header='<header class="pearl-header inner"><div class="pearl-brand">MUSE</div><h1>Заметки</h1></header>';
+  const entries=Object.entries(dayNotes()).filter(([date,note])=>validISO(date)&&typeof note==='string'&&note.trim()).sort(([a],[b])=>b.localeCompare(a));
+  if(!entries.length){
+    return header+'<section class="day-note-card"><div class="day-note-heading"><h3>'+noteIcon()+'Пока нет заметок</h3></div><p class="day-note-empty">Запиши, как прошёл день.</p><button type="button" class="mini-plus notes-archive-add" data-open-day-note="'+data.today+'">Добавить заметку за сегодня</button></section>';
+  }
+  const starts=recordedCycleStarts(data.cycle.periodDays||[]);
+  let startIndex=starts.length-1;
+  let month='';
+  let list='';
+  for(const [date,note] of entries){
+    while(startIndex>=0 && starts[startIndex]>date)startIndex--;
+    const day=startIndex<0?null:1+(Date.parse(date)-Date.parse(starts[startIndex]))/86400000;
+    const cycleLabel=day===null?'День цикла неизвестен':day+'-й день цикла';
+    if(date.slice(0,7)!==month){
+      if(month)list+='</section>';
+      month=date.slice(0,7);
+      const [year,number]=month.split('-');
+      list+='<section class="section notes-archive-month"><div class="section-head"><h2>'+monthsRU[Number(number)-1]+' '+year+'</h2></div>';
+    }
+    list+='<details class="day-note-card notes-archive-entry"><summary class="day-note-heading"><time datetime="'+date+'">'+formatLongDate(date)+'</time><span class="notes-archive-cycle">'+cycleLabel+'</span><span class="notes-archive-chevron" aria-hidden="true">⌄</span><span class="day-note-preview notes-archive-preview">'+escapeText(note.slice(0,180))+(note.length>180?'…':'')+'</span></summary><p class="day-note-preview notes-archive-full">'+escapeText(note)+'</p><button type="button" class="text-link" data-open-day-note="'+date+'" aria-label="Изменить заметку за '+formatLongDate(date)+'">Изменить</button></details>';
+  }
+  return header+list+'</section>';
+}
+
+const notesProfileTab=document.querySelector('#bottomNav [data-tab="profile"]');
+if(notesProfileTab){
+  notesProfileTab.insertAdjacentHTML('beforebegin','<button type="button" class="nav-btn" data-tab="notes"><i>'+noteIcon()+'</i><span>Заметки</span></button>');
+  notesProfileTab.previousElementSibling?.addEventListener('click',()=>window.scrollTo(0,0));
+}
+
+const bindBeforeNotesArchive=bindMainEvents;
+bindMainEvents=function(){
+  bindBeforeNotesArchive();
+  document.querySelectorAll('#bottomNav .nav-btn').forEach(button=>{
+    if(button.dataset.tab===activeTab)button.setAttribute('aria-current','page');
+    else button.removeAttribute('aria-current');
+  });
+};
 
 loadData();
 </script>
